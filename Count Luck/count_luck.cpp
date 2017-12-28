@@ -11,29 +11,42 @@ bool valid(int i, int j) {
 }
 
 int dfs(int i, int j, char forest[100][100], bool visited[100][100]) {
+    // Current location
+    cout << "(" << i << "," << j << ")   ";
     // See if we are at destination
     if (forest[i][j] == '*') return 0;
     // Count how many available directions
     int dirs = 0;
-    for (int m = -1; m <= 1; m+=2) {
-        for (int n = -1; n <= 1; n+=2) {
-            if (forest[i+m][j+n] == '.') {
+    for (int m = -1; m <= 1; m++) {
+        for (int n = -1; n <= 1; n++) {
+            if (m * n != 0 || (m == 0 && n == 0)) continue;
+            if (valid(i+m, j+n) && 
+                forest[i+m][j+n] == '.') {
                 dirs++;
             }
         }
     }
-    int wave = dirs == 1? 0 : 1;
+    cout << "Dirs = " << dirs << endl;
+    int wave = (dirs == 1 || dirs == 0) ? 0 : 1;
     //DFS
-    for (int m = -1; m <= 1; m+=2) {
-        for (int n = -1; n <= 1; n+=2) {
-            if (valid[i+m][j+n] && 
-                !visited[i+m][j+n] &&
-                forest[i+m][j+n] == '.') {
+    for (int m = -1; m <= 1; m++) {
+        for (int n = -1; n <= 1; n++) {
+            if (m * n != 0 || (m == 0 && n == 0)) continue;
+            if (valid(i+m, j+n) && 
+                !visited[i+m][j+n]) {
+                if (forest[i+m][j+n] == '*') return 0;
+                if (forest[i+m][j+n] == 'X') continue;
                 visited[i+m][j+n] = true;
-                
+                int waves = dfs(i+m, j+n, forest, visited);
+                if (waves == -1) {
+                    continue;
+                } else {
+                    return waves + wave;
+                }
             }
         }
     }
+    return -1;
 }
 
 int main() {
@@ -46,14 +59,26 @@ int main() {
         cin >> N >> M;
         char forest[100][100];
         bool visited[100][100];
+        int start_i, start_j = 0;
         for (int j = 0; j < N; j++) {
             for (int k = 0; k < M; k++) {
-                cin >> forest[i][j];
-                visited[i][j] = false;
+                cin >> forest[j][k];
+                if (forest[j][k] == 'M') {
+                    start_i = j;
+                    start_j = k;
+                }
+                visited[j][k] = false;
             }
         }
         int K = 0;
         cin >> K;
-        int waves = dfs(}
+        int waves = dfs(start_i, start_j, forest, visited);
+        cout << "Waves = " << waves << endl;
+         if (waves == K) {
+            cout << "Impressed!" << endl;
+        } else {
+            cout << "Oops!" << endl;
+        }
+    }
     return 0;
 }
