@@ -12,7 +12,7 @@ bool valid(int i, int j) {
 
 int dfs(int i, int j, char forest[100][100], bool visited[100][100]) {
     // Current location
-    cout << "(" << i << "," << j << ")   ";
+    //cout << "(" << i << "," << j << ")   ";
     // See if we are at destination
     if (forest[i][j] == '*') return 0;
     // Count how many available directions
@@ -21,12 +21,14 @@ int dfs(int i, int j, char forest[100][100], bool visited[100][100]) {
         for (int n = -1; n <= 1; n++) {
             if (m * n != 0 || (m == 0 && n == 0)) continue;
             if (valid(i+m, j+n) && 
-                forest[i+m][j+n] == '.') {
+                (forest[i+m][j+n] == '.' || 
+                 forest[i+m][j+n] == '*') &&
+                !visited[i+m][j+n]) {
                 dirs++;
             }
         }
     }
-    cout << "Dirs = " << dirs << endl;
+    //cout << "Dirs = " << dirs << endl;
     int wave = (dirs == 1 || dirs == 0) ? 0 : 1;
     //DFS
     for (int m = -1; m <= 1; m++) {
@@ -34,7 +36,6 @@ int dfs(int i, int j, char forest[100][100], bool visited[100][100]) {
             if (m * n != 0 || (m == 0 && n == 0)) continue;
             if (valid(i+m, j+n) && 
                 !visited[i+m][j+n]) {
-                if (forest[i+m][j+n] == '*') return 0;
                 if (forest[i+m][j+n] == 'X') continue;
                 visited[i+m][j+n] = true;
                 int waves = dfs(i+m, j+n, forest, visited);
@@ -72,10 +73,11 @@ int main() {
         }
         int K = 0;
         cin >> K;
+        visited[start_i][start_j] = true;
         int waves = dfs(start_i, start_j, forest, visited);
-        cout << "Waves = " << waves << endl;
+        //cout << "Waves = " << waves << endl;
          if (waves == K) {
-            cout << "Impressed!" << endl;
+            cout << "Impressed" << endl;
         } else {
             cout << "Oops!" << endl;
         }
