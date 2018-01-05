@@ -3,14 +3,15 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <list>
 using namespace std;
 
-bool valid(int i, int j) {
-    return 0 <= i && i < 100 &&
-           0 <= j && j < 100;
+bool valid(int i, int j, int N, int M) {
+    return 0 <= i && i < N &&
+           0 <= j && j < M;
 }
 
-int dfs(int i, int j, char forest[100][100], bool visited[100][100]) {
+int dfs(int i, int j, char **forest, bool **visited, int N, int M) {
     // Current location
     //cout << "(" << i << "," << j << ")   ";
     // See if we are at destination
@@ -20,7 +21,7 @@ int dfs(int i, int j, char forest[100][100], bool visited[100][100]) {
     for (int m = -1; m <= 1; m++) {
         for (int n = -1; n <= 1; n++) {
             if (m * n != 0 || (m == 0 && n == 0)) continue;
-            if (valid(i+m, j+n) && 
+            if (valid(i+m, j+n, N, M) && 
                 (forest[i+m][j+n] == '.' || 
                  forest[i+m][j+n] == '*') &&
                 !visited[i+m][j+n]) {
@@ -34,11 +35,11 @@ int dfs(int i, int j, char forest[100][100], bool visited[100][100]) {
     for (int m = -1; m <= 1; m++) {
         for (int n = -1; n <= 1; n++) {
             if (m * n != 0 || (m == 0 && n == 0)) continue;
-            if (valid(i+m, j+n) && 
+            if (valid(i+m, j+n, N, M) && 
                 !visited[i+m][j+n]) {
                 if (forest[i+m][j+n] == 'X') continue;
                 visited[i+m][j+n] = true;
-                int waves = dfs(i+m, j+n, forest, visited);
+                int waves = dfs(i+m, j+n, forest, visited, N, M);
                 if (waves == -1) {
                     continue;
                 } else {
@@ -58,8 +59,13 @@ int main() {
         int N = 0;
         int M = 0;
         cin >> N >> M;
-        char forest[100][100];
-        bool visited[100][100];
+        char **forest = new char*[N];
+        bool **visited = new bool*[N];
+        for (int i = 0; i < N; i++) {
+            forest[i] = new char[M];
+            visited[i] = new bool[M];
+        }
+
         int start_i, start_j = 0;
         for (int j = 0; j < N; j++) {
             for (int k = 0; k < M; k++) {
@@ -74,13 +80,20 @@ int main() {
         int K = 0;
         cin >> K;
         visited[start_i][start_j] = true;
-        int waves = dfs(start_i, start_j, forest, visited);
+        int waves = dfs(start_i, start_j, forest, visited, N, M);
         //cout << "Waves = " << waves << endl;
          if (waves == K) {
             cout << "Impressed" << endl;
         } else {
             cout << "Oops!" << endl;
         }
+        
+        for (int i = 0; i < N; i++) {
+            delete(forest[i]);
+            delete(visited[i]);
+        }
+        delete(forest);
+        delete(visited);
     }
     return 0;
 }
